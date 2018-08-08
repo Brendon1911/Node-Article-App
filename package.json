@@ -1,0 +1,22 @@
+{
+  "name": "node-article-app",
+  "version": "1.0.0",
+  "description": "A simple Node.js, Express and MongoDB CRUD app",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Brendon1911/Node-Article-App.git"
+  },
+  "author": "Brendon Richards",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Brendon1911/Node-Article-App/issues"
+  },
+  "homepage": "https://github.com/Brendon1911/Node-Article-App#readme",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
+}
