@@ -1,8 +1,25 @@
-const express = require("express"),
-      path    = require("path");
+const express   = require("express"),
+      path      = require("path"),
+      mongoose  = require("mongoose");
+
+mongoose.connect("mongodb://brendon:pass123@ds215502.mlab.com:15502/node-article-app");
+let db = mongoose.connection;
+
+// Check connection
+db.once("open", () => {
+  console.log("Connected to database");
+});
+
+// Check for DB errors
+db.on("error", (err) => {
+  console.log(err);
+});
 
 // Init App
 const app = express();
+
+// Bring in Models
+const Article = require("./models/article");
 
 // Load View Engine
 app.set("views", path.join(__dirname, "views"));
@@ -10,29 +27,15 @@ app.set("view engine", "pug");
 
 // Home Route
 app.get("/", (req, res) => {
-  let articles = [
-    {
-      id: 1,
-      title: "Article One",
-      author: "Brendon Richards",
-      body: "This is article 1."
-    },
-    {
-      id: 2,
-      title: "Article Two",
-      author: "John Doe",
-      body: "This is article 2."
-    },
-    {
-      id: 1,
-      title: "Article Three",
-      author: "Brendon Richards",
-      body: "This is article 3."
+  Article.find({}, (err, articles) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.render("index", {
+        title: "Articles",
+        articles: articles
+      });
     }
-  ]
-  res.render("index", {
-    title: "Articles",
-    articles: articles
   });
 });
 
