@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/Brendon1911/Node-Article-App#readme",
   "dependencies": {
+    "body-parser": "^1.18.3",
     "express": "^4.16.3",
     "mongoose": "^5.2.7",
     "pug": "^2.0.3"

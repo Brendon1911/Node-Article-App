@@ -1,6 +1,7 @@
-const express   = require("express"),
-      path      = require("path"),
-      mongoose  = require("mongoose");
+const express     = require("express"),
+      path        = require("path"),
+      mongoose    = require("mongoose");
+      bodyParser  = require("body-parser");
 
 mongoose.connect("mongodb://brendon:pass123@ds215502.mlab.com:15502/node-article-app");
 let db = mongoose.connection;
@@ -25,6 +26,13 @@ const Article = require("./models/article");
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "pug");
 
+// Body Parser Middleware
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
+
+// parse application/json
+app.use(bodyParser.json())
+
 // Home Route
 app.get("/", (req, res) => {
   Article.find({}, (err, articles) => {
@@ -43,6 +51,23 @@ app.get("/", (req, res) => {
 app.get("/articles/add", (req, res) => {
   res.render("add_article", {
     title: "Add Article"
+  });
+});
+
+// Add Submit POST Route
+app.post("/articles/add", (req, res) => {
+  let article = new Article();
+  article.title = req.body.title;
+  article.author = req.body.author;
+  article.body = req.body.body;
+
+  article.save((err) => {
+    if (err) {
+      console.log(err);
+      return
+    } else {
+      res.redirect("/");
+    }
   });
 });
 
