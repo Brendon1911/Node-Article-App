@@ -1,7 +1,10 @@
 const express     = require("express"),
       path        = require("path"),
-      mongoose    = require("mongoose");
-      bodyParser  = require("body-parser");
+      mongoose    = require("mongoose"),
+      bodyParser  = require("body-parser"),
+      expressValidator = require("express-validator"),
+      flash = require("connect-flash"),
+      session = require("express-session");
 
 mongoose.connect("mongodb://brendon:pass123@ds215502.mlab.com:15502/node-article-app");
 let db = mongoose.connection;
@@ -34,7 +37,24 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json());
 
 // Set Public Folder
-app.use(express.static(path.join(__dirname, "public")))
+app.use(express.static(path.join(__dirname, "public")));
+
+// Express Session Middleware
+app.use(session({
+  secret: 'keyboard cat',
+  resave: true,
+  saveUninitialized: true,
+}));
+
+// Express Messages Middleware
+app.use(require('connect-flash')());
+app.use(function (req, res, next) {
+  res.locals.messages = require('express-messages')(req, res);
+  next();
+});
+
+// Express Validator Middleware
+app.use(expressValidator());
 
 // Home Route
 app.get("/", (req, res) => {
@@ -50,79 +70,9 @@ app.get("/", (req, res) => {
   });
 });
 
-// Get Single Article
-app.get("/article/:id", (req, res) => {
-  Article.findById(req.params.id, (err, article) => {
-    res.render("article", {
-      article: article
-    });
-  });
-});
-
-// Add Route
-app.get("/articles/add", (req, res) => {
-  res.render("add_article", {
-    title: "Add Article"
-  });
-});
-
-// Add Submit POST Route
-app.post("/articles/add", (req, res) => {
-  let article = new Article();
-  article.title = req.body.title;
-  article.author = req.body.author;
-  article.body = req.body.body;
-
-  article.save((err) => {
-    if (err) {
-      console.log(err);
-      return
-    } else {
-      res.redirect("/");
-    }
-  });
-});
-
-// Load Edit Form
-app.get("/article/edit/:id", (req, res) => {
-  Article.findById(req.params.id, (err, article) => {
-    res.render("edit_article", {
-      title: "Edit Article",
-      article: article
-    });
-  });
-});
-
-// Update Submit POST Route
-app.post("/articles/edit/:id", (req, res) => {
-  let article = {};
-  article.title = req.body.title;
-  article.author = req.body.author;
-  article.body = req.body.body;
-
-  let query = { _id:req.params.id }
-
-  Article.update(query, article, (err) => {
-    if (err) {
-      console.log(err);
-      return
-    } else {
-      res.redirect("/");
-    }
-  });
-});
-
-app.delete("/article/:id", (req, res) => {
-  let query = { _id: req.params.id }
-
-  Article.remove(query, (err) => {
-    if (err) {
-      console.log(err);
-    } else {
-      res.send("Successfully deleted");
-    }
-  });
-});
+// Route Files
+let articles = require("./routes/articles");
+app.use("/articles", articles);
 
 // Start Server
 app.listen(3000, () => {
