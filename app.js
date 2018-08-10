@@ -1,12 +1,14 @@
-const express     = require("express"),
-      path        = require("path"),
-      mongoose    = require("mongoose"),
-      bodyParser  = require("body-parser"),
-      expressValidator = require("express-validator"),
-      flash = require("connect-flash"),
-      session = require("express-session");
+const express           = require("express"),
+      path              = require("path"),
+      mongoose          = require("mongoose"),
+      bodyParser        = require("body-parser"),
+      expressValidator  = require("express-validator"),
+      flash             = require("connect-flash"),
+      session           = require("express-session"),
+      config            = require("./config/database"),
+      passport          = require("passport");
 
-mongoose.connect("mongodb://brendon:pass123@ds215502.mlab.com:15502/node-article-app");
+mongoose.connect(config.database);
 let db = mongoose.connection;
 
 // Check connection
@@ -55,6 +57,18 @@ app.use(function (req, res, next) {
 
 // Express Validator Middleware
 app.use(expressValidator());
+
+// Passport Config
+require("./config/passport")(passport);
+
+// Passport Middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.get("*", (req, res, next) => {
+  res.locals.user = req.user || null;
+  next();
+});
 
 // Home Route
 app.get("/", (req, res) => {

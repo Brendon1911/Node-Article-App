@@ -18,12 +18,17 @@ html
           li.nav-item
             a.nav-link(href='/articles/add') Add Article
         ul.navbar-nav.ml-auto
-          li.nav-item
-            a.nav-link(href='/users/register') Register 
-              i.fas.fa-user-plus
-          li.nav-item
-            a.nav-link(href='/users/login') Login 
-              i.fas.fa-user-check
+          if user
+            li.nav-item
+              a.nav-link(href="/users/logout") Logout 
+                i.fas.fa-user-times
+          else
+            li.nav-item
+              a.nav-link(href='/users/register') Register 
+                i.fas.fa-user-plus
+            li.nav-item
+              a.nav-link(href='/users/login') Login 
+                i.fas.fa-user-check
   .container
     != messages("message", locals)
     if errors
